@@ -34,5 +34,36 @@ jobs:
         with:
           name: bandit_results
           path: bandit_results.json
+        
+  docker_scan:
+    name: Docker Image Scan
+    runs-on: ubuntu-latest
 
-      
+    steps:
+      - name: Checkout Latest Code
+        uses: actions/checkout@v4.1.7
+
+      - name: Set up Docker
+        uses: docker-practice/setup-docker@v2.0.0
+        with:
+          docker_version: '20.10.7'
+
+      - name: Build Docker Image
+        run: |
+          docker build -f Dockerfile -t devsecops-pygoat:v1.0 .
+
+      - name: Scan Docker Image Using Docker Scout
+        uses: docker/scout@v1.0.0
+        with:
+          dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+          dockerhub_password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          command: quickview, cves      
+          only-severity: high, critical
+          sarif-output: scout_results.sarif
+
+      - name: Upload Scout Results
+        uses: actions/upload-artifact@v3.2.1-node20
+        if: always()
+        with:
+          name: docker_scout_results
+          path: scout_results.sarif
