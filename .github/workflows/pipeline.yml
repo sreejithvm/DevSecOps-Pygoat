@@ -12,10 +12,10 @@ jobs:
 
     steps:
       - name: Checkout Latest Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4.1.7
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5.2.0
         with:
           python-version: '3.x'
 
@@ -29,7 +29,7 @@ jobs:
           bandit -ll -ii -r . -f json -o bandit_results.json
 
       - name: Upload Bandit Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3.2.1-node20
         if: always()
         with:
           name: bandit_results
